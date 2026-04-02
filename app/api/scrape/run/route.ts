@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
         // Check if company already exists
         const { data: existing } = await supabaseAdmin
           .from('companies')
-          .select('id')
+          .select('*')
           .eq('name', company.name)
           .eq('location', company.location)
           .limit(1)

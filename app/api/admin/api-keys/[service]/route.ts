@@ -10,10 +10,10 @@ export const dynamic = 'force-dynamic'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { service: string } }
+  context: { params: Promise<{ service: string }> }
 ) {
   try {
-    const { service } = params
+    const { service } = await context.params
 
     if (!service) {
       return NextResponse.json(
@@ -75,10 +75,10 @@ export async function GET(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { service: string } }
+  context: { params: Promise<{ service: string }> }
 ) {
   try {
-    const { service } = params
+    const { service } = await context.params
 
     if (!service) {
       return NextResponse.json(
