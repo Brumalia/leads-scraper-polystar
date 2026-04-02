@@ -4,10 +4,6 @@ import { decrypt } from '@/lib/encryption'
 
 export const dynamic = 'force-dynamic'
 
-/**
- * GET /api/admin/api-keys/[service]/get-key
- * Get decrypted API key for a service (server-side only)
- */
 export async function GET(
   request: NextRequest,
   { params }: { params: { service: string } }
@@ -69,10 +65,6 @@ export async function GET(
   }
 }
 
-/**
- * DELETE /api/admin/api-keys/[service]
- * Delete an API key
- */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { service: string } }
