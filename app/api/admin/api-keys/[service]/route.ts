@@ -4,10 +4,16 @@ import { decrypt } from '@/lib/encryption'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/admin/api-keys/[service]/get-key
+ * Get decrypted API key for a service (server-side only)
+ */
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { service: string } }
+) {
   try {
-    const { searchParams } = new URL(request.url)
-    const service = searchParams.get('service')
+    const { service } = params
 
     if (!service) {
       return NextResponse.json(
@@ -16,6 +22,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Fetch the encrypted key
     const { data: keyData, error } = await supabaseAdmin
       .from('api_keys')
       .select('encrypted_key, salt, iv, is_active')
@@ -45,6 +52,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Decrypt the key
     const decryptedKey = await decrypt(keyData.encrypted_key, keyData.salt, keyData.iv)
 
     return NextResponse.json({
@@ -61,10 +69,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+/**
+ * DELETE /api/admin/api-keys/[service]
+ * Delete an API key
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { service: string } }
+) {
   try {
-    const { searchParams } = new URL(request.url)
-    const service = searchParams.get('service')
+    const { service } = params
 
     if (!service) {
       return NextResponse.json(
