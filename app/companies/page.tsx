@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 
 interface Company {
@@ -10,6 +10,10 @@ interface Company {
   email: string | null
   website: string | null
   business_type: string | null
+  industry: string | null
+  company_size: string | null
+  is_contract_packer: boolean
+  is_growing: boolean
   scraped_at: string
 }
 
@@ -30,6 +34,10 @@ export default function CompaniesPage() {
   const [search, setSearch] = useState('')
   const [location, setLocation] = useState('')
   const [businessType, setBusinessType] = useState('')
+  const [industry, setIndustry] = useState('')
+  const [companySize, setCompanySize] = useState('')
+  const [isContractPacker, setIsContractPacker] = useState('')
+  const [isGrowing, setIsGrowing] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [totalCount, setTotalCount] = useState(0)
@@ -37,7 +45,7 @@ export default function CompaniesPage() {
   const [exporting, setExporting] = useState(false)
 
   // Fetch companies data
-  const fetchCompanies = async (page: number = 1) => {
+  const fetchCompanies = useCallback(async (page: number = 1) => {
     setLoading(true)
     setError(null)
 
@@ -50,6 +58,10 @@ export default function CompaniesPage() {
       if (search) params.append('search', search)
       if (location) params.append('location', location)
       if (businessType) params.append('business_type', businessType)
+      if (industry) params.append('industry', industry)
+      if (companySize) params.append('company_size', companySize)
+      if (isContractPacker) params.append('is_contract_packer', isContractPacker)
+      if (isGrowing) params.append('is_growing', isGrowing)
 
       const response = await fetch(`/api/companies?${params.toString()}`)
 
@@ -67,7 +79,7 @@ export default function CompaniesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [search, location, businessType, industry, companySize, isContractPacker, isGrowing, pageSize])
 
   // Handle search input
   const handleSearch = (value: string) => {
@@ -87,6 +99,30 @@ export default function CompaniesPage() {
     setCurrentPage(1)
   }
 
+  // Handle industry filter
+  const handleIndustryFilter = (value: string) => {
+    setIndustry(value)
+    setCurrentPage(1)
+  }
+
+  // Handle company size filter
+  const handleCompanySizeFilter = (value: string) => {
+    setCompanySize(value)
+    setCurrentPage(1)
+  }
+
+  // Handle contract packer filter
+  const handleContractPackerFilter = (value: string) => {
+    setIsContractPacker(value)
+    setCurrentPage(1)
+  }
+
+  // Handle growing filter
+  const handleGrowingFilter = (value: string) => {
+    setIsGrowing(value)
+    setCurrentPage(1)
+  }
+
   // Handle export to CSV
   const handleExport = async () => {
     setExporting(true)
@@ -95,6 +131,10 @@ export default function CompaniesPage() {
       if (search) params.append('search', search)
       if (location) params.append('location', location)
       if (businessType) params.append('business_type', businessType)
+      if (industry) params.append('industry', industry)
+      if (companySize) params.append('company_size', companySize)
+      if (isContractPacker) params.append('is_contract_packer', isContractPacker)
+      if (isGrowing) params.append('is_growing', isGrowing)
 
       const response = await fetch(`/api/export/csv?${params.toString()}`)
 
@@ -130,13 +170,17 @@ export default function CompaniesPage() {
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [search, location, businessType, currentPage, pageSize])
+  }, [fetchCompanies, currentPage])
 
   // Reset filters
   const handleResetFilters = () => {
     setSearch('')
     setLocation('')
     setBusinessType('')
+    setIndustry('')
+    setCompanySize('')
+    setIsContractPacker('')
+    setIsGrowing('')
     setCurrentPage(1)
   }
 
@@ -163,9 +207,9 @@ export default function CompaniesPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters Section */}
         <div className="bg-white dark:bg-black rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
             {/* Search */}
-            <div className="md:col-span-1">
+            <div>
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Search
               </label>
@@ -179,7 +223,7 @@ export default function CompaniesPage() {
             </div>
 
             {/* Location Filter */}
-            <div className="md:col-span-1">
+            <div>
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Location
               </label>
@@ -193,7 +237,7 @@ export default function CompaniesPage() {
             </div>
 
             {/* Business Type Filter */}
-            <div className="md:col-span-1">
+            <div>
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Business Type
               </label>
@@ -211,8 +255,94 @@ export default function CompaniesPage() {
               </select>
             </div>
 
+            {/* Industry Filter */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                Industry
+              </label>
+              <select
+                value={industry}
+                onChange={(e) => handleIndustryFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
+              >
+                <option value="">All Industries</option>
+                <option value="food & drink">Food & Drink</option>
+                <option value="pharma">Pharma</option>
+                <option value="chemicals">Chemicals</option>
+              </select>
+            </div>
+
+            {/* Company Size Filter */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                Company Size
+              </label>
+              <select
+                value={companySize}
+                onChange={(e) => handleCompanySizeFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
+              >
+                <option value="">All Sizes</option>
+                <option value="micro">Micro (&lt;10)</option>
+                <option value="small">Small (10-50)</option>
+                <option value="medium">Medium (50-250)</option>
+                <option value="large">Large (250+)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Contract Packer Toggle */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                Contract Packer
+              </label>
+              <select
+                value={isContractPacker}
+                onChange={(e) => handleContractPackerFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
+              >
+                <option value="">All</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+
+            {/* Growing Toggle */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                Growing
+              </label>
+              <select
+                value={isGrowing}
+                onChange={(e) => handleGrowingFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
+              >
+                <option value="">All</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+
+            {/* Page Size Selector */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                Per Page
+              </label>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(parseInt(e.target.value))}
+                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+
             {/* Reset and Export Buttons */}
-            <div className="md:col-span-1 flex items-end gap-2">
+            <div className="flex items-end gap-2">
               <button
                 onClick={handleResetFilters}
                 className="flex-1 px-4 py-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors font-medium"

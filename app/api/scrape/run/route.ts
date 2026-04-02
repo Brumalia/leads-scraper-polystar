@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // This is a placeholder for the actual scraping logic
     // In a real implementation, this would:

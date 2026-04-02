@@ -12,6 +12,10 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     const location = searchParams.get('location') || ''
     const businessType = searchParams.get('business_type') || ''
+    const industry = searchParams.get('industry') || ''
+    const companySize = searchParams.get('company_size') || ''
+    const isContractPacker = searchParams.get('is_contract_packer') || ''
+    const isGrowing = searchParams.get('is_growing') || ''
 
     // Build query with filters
     let query = supabaseAdmin
@@ -31,6 +35,26 @@ export async function GET(request: NextRequest) {
     // Apply business_type filter
     if (businessType) {
       query = query.eq('business_type', businessType)
+    }
+
+    // Apply industry filter
+    if (industry) {
+      query = query.eq('industry', industry)
+    }
+
+    // Apply company_size filter
+    if (companySize) {
+      query = query.eq('company_size', companySize)
+    }
+
+    // Apply is_contract_packer filter
+    if (isContractPacker) {
+      query = query.eq('is_contract_packer', isContractPacker === 'true')
+    }
+
+    // Apply is_growing filter
+    if (isGrowing) {
+      query = query.eq('is_growing', isGrowing === 'true')
     }
 
     // Get total count with filters
