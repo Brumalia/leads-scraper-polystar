@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
         if (existing && existing.length > 0) {
           // Update existing company
-          const existingCompany = existing[0] as any
+          const existingCompany = existing[0]
           
           const { error: updateError } = await supabaseAdmin
             .from('companies')
