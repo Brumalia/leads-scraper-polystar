@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UK Food & Drink Leads Scraper",
-  description: "Automated daily leads of UK food & drink producers for Polystar",
+  title: "UK Leads Scraper",
+  description: "Automated daily leads of UK manufacturers for Polystar. Filter by industry, location, company size, and more.",
 };
 
 export default function RootLayout({
