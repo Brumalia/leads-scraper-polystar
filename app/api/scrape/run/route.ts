@@ -39,44 +39,36 @@ export async function POST(request: NextRequest) {
       console.log('Step 1: Searching Companies House API...')
       const companiesHouseResults: unknown[] = []
 
-      if (process.env.COMPANIES_HOUSE_API_KEY) {
-        try {
-          const searchQueries = industry === 'all' 
-            ? ['manufacturer', 'producer', 'brewery', 'distillery', 'food production']
-            : [industry + ' manufacturer', industry + ' producer']
+      try {
+        const searchQueries = industry === 'all' 
+          ? ['manufacturer', 'producer', 'brewery', 'distillery', 'food production']
+          : [industry + ' manufacturer', industry + ' producer']
 
-          for (const query of searchQueries) {
-            const results = await searchCompaniesHouse(query)
-            companiesHouseResults.push(...results)
-            console.log(`Companies House found ${results.length} companies for "${query}"`)
-          }
-        } catch (error) {
-          console.error('Companies House API error:', error)
+        for (const query of searchQueries) {
+          const results = await searchCompaniesHouse(query)
+          companiesHouseResults.push(...results)
+          console.log(`Companies House found ${results.length} companies for "${query}"`)
         }
-      } else {
-        console.log('Companies House API key not configured, skipping')
+      } catch (error) {
+        console.error('Companies House API error:', error)
       }
 
       // Step 2: Search Google Places
       console.log('Step 2: Searching Google Places API...')
       const googlePlacesResults: unknown[] = []
 
-      if (process.env.GOOGLE_PLACES_API_KEY) {
-        try {
-          const searchQueries = industry === 'all'
-            ? ['manufacturing', 'food production', 'brewery', 'distillery']
-            : [industry + ' manufacturing']
+      try {
+        const searchQueries = industry === 'all'
+          ? ['manufacturing', 'food production', 'brewery', 'distillery']
+          : [industry + ' manufacturing']
 
-          for (const query of searchQueries) {
-            const results = await searchGooglePlaces(query)
-            googlePlacesResults.push(...results)
-            console.log(`Google Places found ${results.length} places for "${query}"`)
-          }
-        } catch (error) {
-          console.error('Google Places API error:', error)
+        for (const query of searchQueries) {
+          const results = await searchGooglePlaces(query)
+          googlePlacesResults.push(...results)
+          console.log(`Google Places found ${results.length} places for "${query}"`)
         }
-      } else {
-        console.log('Google Places API key not configured, skipping')
+      } catch (error) {
+        console.error('Google Places API error:', error)
       }
 
       // Step 3: Web scraping with Playwright
@@ -136,21 +128,23 @@ export async function POST(request: NextRequest) {
 
         if (existing && existing.length > 0) {
           // Update existing company
+          const existingCompany = existing[0] as any
+          
           const { error: updateError } = await supabaseAdmin
             .from('companies')
             .update({
-              email: company.email || existing[0].email,
-              website: company.website || existing[0].website,
-              contact_phone: company.contact_phone || existing[0].contact_phone,
-              business_type: company.business_type || existing[0].business_type,
-              industry: company.industry || existing[0].industry,
-              company_size: company.company_size || existing[0].company_size,
-              is_contract_packer: company.is_contract_packer !== undefined ? company.is_contract_packer : existing[0].is_contract_packer,
-              is_growing: company.is_growing !== undefined ? company.is_growing : existing[0].is_growing,
+              email: company.email || existingCompany.email,
+              website: company.website || existingCompany.website,
+              contact_phone: company.contact_phone || existingCompany.contact_phone,
+              business_type: company.business_type || existingCompany.business_type,
+              industry: company.industry || existingCompany.industry,
+              company_size: company.company_size || existingCompany.company_size,
+              is_contract_packer: company.is_contract_packer !== undefined ? company.is_contract_packer : existingCompany.is_contract_packer,
+              is_growing: company.is_growing !== undefined ? company.is_growing : existingCompany.is_growing,
               scraped_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             })
-            .eq('id', existing[0].id)
+            .eq('id', existingCompany.id)
 
           if (!updateError) {
             companiesUpdated++

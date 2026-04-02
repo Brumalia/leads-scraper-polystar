@@ -27,6 +27,12 @@ export default function Home() {
           >
             GitHub
           </a>
+          <a
+            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-zinc-300 dark:border-zinc-700 px-5 transition-colors hover:border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800 md:w-[158px]"
+            href="/admin/api-keys"
+          >
+            API Keys
+          </a>
         </div>
       </main>
     </div>

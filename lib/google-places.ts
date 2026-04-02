@@ -3,6 +3,8 @@
  * API Documentation: https://developers.google.com/maps/documentation/places/web-service
  */
 
+import { getGooglePlacesApiKey } from './api-keys'
+
 interface PlaceSearchResponse {
   results: {
     place_id: string
@@ -42,8 +44,6 @@ interface PlaceDetailsResponse {
   error_message?: string
 }
 
-const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY || ''
-
 /**
  * Search for places by keyword and location
  */
@@ -52,8 +52,10 @@ export async function searchPlaces(
   location?: { lat: number; lng: number },
   radius = 50000 // 50km radius
 ): Promise<PlaceSearchResponse['results']> {
+  const GOOGLE_PLACES_API_KEY = await getGooglePlacesApiKey()
+
   if (!GOOGLE_PLACES_API_KEY) {
-    throw new Error('GOOGLE_PLACES_API_KEY not configured')
+    throw new Error('Google Places API key not configured. Please configure it in Admin > API Keys.')
   }
 
   const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json')
@@ -88,8 +90,10 @@ export async function searchPlaces(
  * Get detailed place information
  */
 export async function getPlaceDetails(placeId: string): Promise<PlaceDetailsResponse['result']> {
+  const GOOGLE_PLACES_API_KEY = await getGooglePlacesApiKey()
+
   if (!GOOGLE_PLACES_API_KEY) {
-    throw new Error('GOOGLE_PLACES_API_KEY not configured')
+    throw new Error('Google Places API key not configured. Please configure it in Admin > API Keys.')
   }
 
   const url = new URL('https://maps.googleapis.com/maps/api/place/details/json')
@@ -135,11 +139,10 @@ export function isNorthEngland(lat: number): boolean {
   return lat > leicesterLat
 }
 
-
 /**
  * Extract UK business types from Google Places types
  */
-export function extractBusinessType(types: string[]): string {
+export function extractBusinessType(types: string[]): string | null {
   const businessTypeMappings: Record<string, string> = {
     'food': 'Food Production',
     'restaurant': 'Restaurant',
@@ -148,7 +151,7 @@ export function extractBusinessType(types: string[]): string {
     'bakery': 'Food Production',
     'grocery_or_supermarket': 'Retail',
     'store': 'Retail',
-    'establishment': null, // Generic, don't use
+    'establishment': '', // Generic, don't use
   }
 
   for (const type of types) {

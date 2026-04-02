@@ -39,14 +39,14 @@ function generateCompanyKey(company: Company): string {
 /**
  * Merge companies from multiple sources
  */
-export function mergeCompanies(companiesBySource: Record<string, Company[]>): MergeResult {
+export function mergeCompanies(companiesBySource: Record<string, unknown[]>): MergeResult {
   const mergedMap = new Map<string, Company>()
   let duplicatesRemoved = 0
   let conflictsResolved = 0
   
   // Process each source's companies
   for (const [, companies] of Object.entries(companiesBySource)) {
-    for (const company of companies) {
+    for (const company of companies as Company[]) {
       const key = generateCompanyKey(company)
       
       if (mergedMap.has(key)) {
