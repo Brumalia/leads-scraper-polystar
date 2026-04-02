@@ -2,7 +2,7 @@
 
 **Project:** leads-scraper-polystar
 **Client:** Polystar (via Corsus at corsus@agentmail.to)
-**Last Updated:** 2026-04-01 16:52 GMT
+**Last Updated:** 2026-04-02 13:55 GMT
 
 ---
 
@@ -27,8 +27,21 @@
 - ✅ Directory structure created (PRD/, docs/, scripts/)
 - ✅ PM Agent coordination started
 
+### ✅ Phase 1 Complete (2026-04-02)
+- ✅ Industry Filter Dropdown (Food & Drink, Pharma, Chemicals)
+- ✅ Company Size Filter Dropdown (Micro, Small, Medium, Large)
+- ✅ Contract Packer Toggle (All, Yes, No)
+- ✅ Growing Toggle (All, Yes, No)
+- ✅ Database migration (002_add_company_filters.sql)
+- ✅ All filters working in UI + API
+- ✅ Vercel deployment (leads-scraper-polystar-mvxs57uq8-matty575s-projects.vercel.app)
+- ✅ QA passed with agent-browser
+- ✅ CSV export with all 11 columns
+- ✅ All environment variables configured
+
 ### ⚠️ Manual Configuration Required
-- ⚠️ Vercel not linked to GitHub (needs manual configuration in Vercel dashboard)
+- ⚠️ Vercel project linked to wrong repo (mission-control instead of leads-scraper-polystar)
+- ✅ Manual deployments working via API
 - ⚠️ Production branch not set in Vercel (needs manual configuration)
 
 ---
@@ -66,52 +79,55 @@
 
 ## Next Steps (Priority Order)
 
-### 1. Fix Vercel-GitHub Linking (Manual)
-- Link Vercel project to GitHub repository in Vercel dashboard
-- Set production branch to `production`
-- Verify deployments work automatically
+### Phase 2: Data Scraping Integration
+1. Companies House API Integration
+   - Get API key
+   - Implement API client (lib/companies-house.ts)
+   - Test with sample queries
+   - Create API route for fetching companies
 
-### 2. Companies House Integration
-- Apply for Companies House API key
-- Implement API client (lib/companies-house.ts)
-- Test API with sample queries
-- Create API route for fetching companies
+2. Google Places Integration
+   - Set up Google Places API key
+   - Implement API client (lib/google-places.ts)
+   - Test with sample queries
+   - Integrate with companies data
 
-### 3. Basic Dashboard
-- Create companies listing page
-- Add pagination
-- Add search and filter UI
-- Implement export to CSV
+3. Web Scraping with Playwright
+   - Install Playwright
+   - Implement scraping logic
+   - Test with sample websites
+   - Handle anti-scraping measures
 
-### 5. Google Places Integration
-- Set up Google Places API key
-- Implement API client
-- Test with sample queries
-- Integrate with companies data
+### Phase 3: Automation & Weekly Digest
+1. Weekly cron job
+   - Schedule: Every Monday at 9:00 AM GMT
+   - Trigger scrape for all industries
+   - Monitor completion
 
-### 6. Web Scraping with Playwright
-- Install Playwright
-- Implement scraping logic
-- Test with sample websites
-- Handle anti-scraping measures
+2. Email digest generation
+   - Generate summary of new/updated companies
+   - CSV attachment with latest data
+   - Send to Jacqui's email
 
-### 7. Daily Scraping Automation
-- Create cron job for daily scraping
-- Implement error handling and retry logic
-- Add status tracking in scrapes table
-- Set up monitoring and alerts
+### Phase 4: QA & Testing
+1. Functional testing
+   - Test all filters individually and combined
+   - Test pagination with large datasets
+   - Test CSV export with filters
+   - Test search edge cases
 
-### 8. QA and Testing
-- Manual testing of all features
-- Test with real data
-- Verify data accuracy
-- Performance testing
+2. QA with agent-browser
+   - Verify UI renders correctly
+   - Test user flows
+   - Verify data persistence
+   - Check Supabase RLS
 
-### 9. Deploy to Production
-- Merge main to production
-- Deploy to Vercel production
-- Set up monitoring
-- Document deployment
+### Phase 5: Production Deployment
+1. Vercel production branch setup
+2. Merge main to production
+3. Deploy to Vercel production
+4. Set up monitoring
+5. Document deployment
 
 ---
 
@@ -147,15 +163,37 @@
 - ⚠️ Vercel not linked to GitHub (manual configuration required)
 - ⚠️ Production branch not set in Vercel (manual configuration required)
 
-## Open Questions (Pending Clarification from Corsus)
+## Recent Work (2026-04-02)
 
-**From Corsus email (2026-04-01 08:20 GMT):**
-Corsus will reach out to Jacqui to clarify:
-1. Industry scope: Food & drink only or also pharma/chemicals?
-2. Email drip campaigns: Automated campaigns or just leads delivered?
-3. Conversion rate expectations: What is the ideal conversion rate?
+### Project Documentation Updates
+- ✅ Created PROJECT-TEMPLATE.md for all new projects
+- ✅ Created Agent-to-Agent Coordination research document
+- ✅ Reorganized workspace docs (moved project-specific docs to projects/)
+- ✅ Updated PRD to v0.5 (industry scope, lead delivery, conversion metrics decisions)
+- ✅ Created FD.md (Functional Design document)
 
-**Status:** Awaiting Corsus clarification from Jacqui
+### Leads Scraper Polystar Development
+- ✅ Added industry filter (Food & Drink, Pharma, Chemicals)
+- ✅ Added company size filter (Micro, Small, Medium, Large)
+- ✅ Added contract packer toggle (All, Yes, No)
+- ✅ Added growing toggle (All, Yes, No)
+- ✅ Created /api/scrapes route (list all scrape runs)
+- ✅ Updated /api/companies with all new filters
+- ✅ Updated /api/export/csv with 11 columns
+- ✅ Applied database migration 002_add_company_filters.sql
+- ✅ Updated test data with industry, company_size values
+- ✅ Configured Vercel environment variables
+- ✅ Manual deployment via Vercel API
+- ✅ QA with agent-browser (all features passing)
+
+### Commits
+- 6e73be3: feat: Add industry, company size, contract packer, growing filters
+- cc2f83f: chore: Trigger rebuild to fix env vars
+
+### URLs
+- Preview: leads-scraper-polystar-mvxs57uq8-matty575s-projects.vercel.app/companies
+- API: leads-scraper-polystar-mvxs57uq8-matty575s-projects.vercel.app/api/companies
+- CSV Export: leads-scraper-polystar-mvxs57uq8-matty575s-projects.vercel.app/api/export/csv
 
 ---
 
