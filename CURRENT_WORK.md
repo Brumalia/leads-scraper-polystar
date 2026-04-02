@@ -2,7 +2,7 @@
 
 **Project:** leads-scraper-polystar
 **Client:** Polystar (via Corsus at corsus@agentmail.to)
-**Last Updated:** 2026-04-01 16:40 GMT
+**Last Updated:** 2026-04-01 16:52 GMT
 
 ---
 
@@ -35,10 +35,22 @@
 
 ## In Progress
 
-### 🔨 Database Setup
-- **Status:** Not started
-- **Next:** Create Supabase tables (companies, scrapes)
-- **Files:** supabase/migrations/
+### ✅ Database Setup (2026-04-01)
+- ✅ Supabase project created: leads-scraper-polystar (ref: aaygspkoogxpoubmutqp)
+- ✅ Region: eu-west-2
+- ✅ Database schema applied (migration: 001_companies_schema.sql)
+- ✅ Tables created: companies, scrapes
+- ✅ Indexes created: idx_companies_location, idx_companies_scraped_at, idx_scrapes_run_date
+- ✅ Updated_at trigger created for companies table
+- ✅ RLS policies enabled and configured for both tables
+- ✅ Environment variables configured (.env.local)
+
+### ✅ API Routes Created (2026-04-01)
+- ✅ GET /api/companies — List companies with pagination
+- ✅ GET /api/scrape/status — Get current scrape status
+- ✅ POST /api/scrape/run — Trigger manual scrape (placeholder)
+- ✅ Supabase client utility created (lib/supabase.ts)
+- ✅ API routes tested and verified working
 
 ### 🔨 Companies House API Integration
 - **Status:** Not started
@@ -59,19 +71,13 @@
 - Set production branch to `production`
 - Verify deployments work automatically
 
-### 2. Database Schema Setup
-- Create Supabase migration file for companies table
-- Create Supabase migration file for scrapes table
-- Apply migrations to Supabase
-- Set up RLS policies
-
-### 3. Companies House Integration
+### 2. Companies House Integration
 - Apply for Companies House API key
 - Implement API client (lib/companies-house.ts)
 - Test API with sample queries
 - Create API route for fetching companies
 
-### 4. Basic Dashboard
+### 3. Basic Dashboard
 - Create companies listing page
 - Add pagination
 - Add search and filter UI
@@ -141,13 +147,27 @@
 - ⚠️ Vercel not linked to GitHub (manual configuration required)
 - ⚠️ Production branch not set in Vercel (manual configuration required)
 
+## Open Questions (Pending Clarification from Corsus)
+
+**From Corsus email (2026-04-01 08:20 GMT):**
+Corsus will reach out to Jacqui to clarify:
+1. Industry scope: Food & drink only or also pharma/chemicals?
+2. Email drip campaigns: Automated campaigns or just leads delivered?
+3. Conversion rate expectations: What is the ideal conversion rate?
+
+**Status:** Awaiting Corsus clarification from Jacqui
+
 ---
 
 ## Credentials and Configuration
 
 ### Supabase
-- Project ID: TBD (needs to be created)
+- Project Name: leads-scraper-polystar
+- Project Ref: aaygspkoogxpoubmutqp
+- URL: https://aaygspkoogxpoubmutqp.supabase.co
+- Region: eu-west-2
 - Management API PAT: /data/.openclaw/workspace/.credentials/supabase-pat-backend.txt
+- DB Password: Configured in .env.local
 
 ### Vercel
 - Token: /data/.openclaw/workspace/.credentials/vercel-token.txt
@@ -183,8 +203,10 @@
 - ✅ Requirements gathered (PRD v0.3 exists)
 - ✅ PRD approved by CTO (technical decisions documented)
 - ✅ Tech stack selected (Supabase, Node.js, Playwright, Next.js)
-- ⏳ Database schema designed (in PRD)
+- ✅ Database schema designed and implemented
 - ✅ Repository created (GitHub + Vercel setup complete)
+- ✅ Database setup complete (Supabase project created, schema applied)
+- ✅ API routes created (companies, scrape status, scrape run)
 - ⏳ Development environment set up (Vercel-GitHub linking needs manual config)
 
 ---
@@ -198,4 +220,4 @@
 
 ---
 
-*Last updated: 2026-04-01 16:40 GMT*
+*Last updated: 2026-04-01 16:52 GMT*

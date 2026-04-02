@@ -1,29 +1,43 @@
-# PRD v0.3 — UK Food & Drink Leads Scraper for Polystar
+# PRD v0.4 — UK Food & Drink Leads Scraper for Polystar
 
 **Client:** Polystar
-**Contact:** Corsus (corsus@agentmail.to)
+**Contact:** Jacqui Horne (Business Development Manager)
+**Brokered by:** Corsus (corsus@agentmail.to)
 **Last Updated:** 2026-04-01
-**Status:** Requirements Approved
+**Status:** Requirements Approved (with open questions)
 
 ---
 
 ## 1. Executive Summary
 
-A web dashboard that scrapes UK food & drink producers and delivers daily leads to Polystar.
+A web dashboard that scrapes UK food & drink producers in North England and delivers weekly leads to Polystar.
 
-**Primary Use Case:** 
-- Polystar needs daily leads of UK food & drink producers
+**Primary Use Case:**
+- Polystar needs weekly leads of independent food and drink producers in North England
+- Target customers: Companies that produce/pack products in tins, bottles, or jars
+- Product being sold: LDPE collation shrink film (polythene packaging) for multi-pack shrink wrapping
 - Manual research is time-consuming and inefficient
 - Automated scraping reduces research time and improves lead quality
+
+**Contact:** Jacqui Horne (Business Development Manager at Polystar Plastics)
+**Brokered by:** Corsus (corsus@agentmail.to)
 
 ---
 
 ## 2. Target Audience
 
-**Primary:** Polystar sales team
-- Needs daily leads of UK food & drink producers
+**Primary:** Polystar sales team (Jacqui Horne)
+- Needs weekly leads of independent food and drink producers in North England
+- Geographic boundary: Leicester as southern limit (North England only)
+- Target companies: Those that produce/pack products in tins, bottles, or jars
 - Wants accurate, up-to-date company information
 - Requires web-based dashboard for easy access
+- Weekly digest sent to Jacqui for review
+
+**Secondary:** Brumalia Studio (development team)
+- Maintains and improves the scraper
+- Monitors scraping performance and data quality
+- Archive weekly snapshots for trend tracking
 
 **Secondary:** Brumalia Studio (development team)
 - Maintains and improves the scraper
@@ -33,17 +47,30 @@ A web dashboard that scrapes UK food & drink producers and delivers daily leads 
 
 ## 3. Core Features
 
-### 3.1 Data Collection
-- **Companies House API:** Company registration data (UK)
-- **Google Places API:** Business locations and contact details
-- **Web Scraping:** Additional company information from company websites
-- **Daily Updates:** Automatic daily data refresh
+### 3.1 Data Sources
+- Business directories: 192.com, Yell.com (food manufacturers sections)
+- Industry associations: Food & Drink Federation member lists
+- Regional networks: Deliciously Yorkshire, North York Moors food producers, Yorkshire Dales National Park listings
+- Company websites: For validation and detailed contact info
+- **Companies House API:** Company registration data (UK) - structured data but lacks contact details
+- **Google Places API:** Business locations and contact details - may miss small businesses
+- **Web Scraping (Playwright):** Fills gaps in company information
+- **Weekly Updates:** Automatic weekly data refresh (new independent producers frequently launch)
 
-### 3.2 Data Fields
+### 3.2 Data Fields Required (Per Lead)
 - Company name
-- Location (area/region)
-- Contact email (if available)
 - Website URL
+- Geographic location (city, county, verify it's north of Leicester)
+- Primary products (tins/bottles/jars - verify fit)
+- Contact details:
+  - Email address (procurement/purchasing preferred)
+  - Phone number
+  - Physical address
+- Company size indicators (if available):
+  - Micro (<10 employees)
+  - Small (10-50 employees)
+  - Medium (50-250 employees)
+- Notes (e.g., "has canning line", "contract bottler", etc.)
 - Business type/industry
 - Date scraped
 
@@ -51,8 +78,13 @@ A web dashboard that scrapes UK food & drink producers and delivers daily leads 
 - Web-based dashboard for lead viewing
 - Filter by location/region
 - Search by company name
-- Export to CSV
-- Daily leads count
+- Export to CSV or JSON
+- Weekly leads count
+- Weekly digest sent to Jacqui for review
+- Archive weekly snapshots for trend tracking
+- Prioritise companies that are actively growing/expanding (job postings, new product launches)
+- Flag contract packers/bottlers separately (different customer segment)
+- Include companies that offer contract manufacturing (higher volume needs)
 
 ---
 
@@ -60,16 +92,23 @@ A web dashboard that scrapes UK food & drink producers and delivers daily leads 
 
 ### 4.1 Performance
 - Dashboard load time: < 3 seconds
-- Daily scrape completion: < 30 minutes
+- Weekly scrape completion: < 30 minutes
 - Concurrent users: 5-10
 
 ### 4.2 Reliability
 - Scrape success rate: > 95%
-- Daily uptime: > 99%
+- Weekly uptime: > 99%
 - Data accuracy: > 90%
+- Quality validation: Cross-reference multiple sources to verify active status
 
-### 4.3 Scalability
-- Support up to 1000 leads per day
+### 4.3 Technical Constraints
+- Respect robots.txt and rate limits
+- Focus on independent producers (not large conglomerates)
+- Geographic filter: North England only (exclude Midlands and south, Leicester as southern limit)
+- Industry filter: Food & drink production only (exclude retail/distribution unless they manufacture)
+
+### 4.4 Scalability
+- Support up to 1000 leads per week
 - Horizontal scaling for future growth
 - Database optimization for large datasets
 
@@ -119,16 +158,25 @@ A web dashboard that scrapes UK food & drink producers and delivers daily leads 
 CREATE TABLE companies (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
-  location TEXT,
-  email TEXT,
-  website TEXT,
+  website_url TEXT,
+  location_city TEXT,
+  location_county TEXT,
+  contact_email TEXT,
+  contact_phone TEXT,
+  physical_address TEXT,
+  products TEXT, -- tins/bottles/jars
   business_type TEXT,
+  company_size TEXT, -- micro/small/medium
+  notes TEXT, -- e.g., "has canning line", "contract bottler"
+  is_contract_packer BOOLEAN DEFAULT FALSE,
+  is_contract_manufacturer BOOLEAN DEFAULT FALSE,
+  is_growing BOOLEAN DEFAULT FALSE,
   scraped_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Scrapes (tracking daily runs)
+-- Scrapes (tracking weekly runs)
 CREATE TABLE scrapes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   run_date DATE NOT NULL UNIQUE,
@@ -142,8 +190,13 @@ CREATE TABLE scrapes (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_companies_location ON companies(location);
+CREATE INDEX idx_companies_location_city ON companies(location_city);
+CREATE INDEX idx_companies_location_county ON companies(location_county);
+CREATE INDEX idx_companies_products ON companies(products);
+CREATE INDEX idx_companies_company_size ON companies(company_size);
 CREATE INDEX idx_companies_scraped_at ON companies(scraped_at);
+CREATE INDEX idx_companies_is_contract_packer ON companies(is_contract_packer);
+CREATE INDEX idx_companies_is_growing ON companies(is_growing);
 CREATE INDEX idx_scrapes_run_date ON scrapes(run_date);
 ```
 
@@ -268,7 +321,7 @@ CREATE INDEX idx_scrapes_run_date ON scrapes(run_date);
 
 ### Enhancement Phase (Target: 2-3 weeks)
 - Web scraping with Playwright
-- Automated daily scraping
+- Automated weekly scraping
 - Improved UI/UX
 - QA and deployment
 
@@ -280,7 +333,45 @@ CREATE INDEX idx_scrapes_run_date ON scrapes(run_date);
 
 ---
 
-## 15. Next Steps
+## 15. Open Questions
+
+### Questions for Jacqui (Business Decisions)
+
+Corsus will clarify these with Jacqui:
+
+1. **Industry Scope:** Does she want ONLY food & drink producers, or are other industries (pharma, chemicals) also relevant?
+   - Current assumption: Food & drink production only
+   - Alternative: Include pharma/chemicals that also use polythene packaging
+
+2. **Email Drip Campaigns:** Does she want email drip campaigns automated, or just leads delivered?
+   - Current assumption: Just leads delivered via dashboard + weekly digest
+   - Alternative: Automated email outreach to new leads
+
+3. **Conversion Rate Expectation:** What's her ideal conversion rate expectation from the scraper?
+   - Need to understand business goals for lead quality vs quantity trade-offs
+
+---
+
+## 16. Categories Already Researched
+
+### Craft Breweries (Examples)
+- Hambleton Brewery (North Yorkshire)
+- Brew York (York)
+- Cloudwater Brew Co (Manchester)
+- Full Circle Brew Co (Newcastle)
+
+### Artisan Food Producers (Examples)
+- Reet Yorkshire Food (jams, chutneys, sauces)
+- Hawkshead Relish Company (preserves)
+
+### Independent Distilleries (Examples)
+- Wicstun Distillery (Market Weighton)
+- Cooper King Distillery (Yorkshire Dales)
+- Captain Cook Distillery (Stokesley)
+
+---
+
+## 17. Next Steps
 
 1. ✅ Project structure created (2026-04-01)
 2. ⬜ Set up Supabase database and RLS policies
