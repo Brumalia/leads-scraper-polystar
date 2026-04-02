@@ -4,12 +4,10 @@ import { decrypt } from '@/lib/encryption'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { service: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const { service } = params
+    const { searchParams } = new URL(request.url)
+    const service = searchParams.get('service')
 
     if (!service) {
       return NextResponse.json(
@@ -18,7 +16,6 @@ export async function GET(
       )
     }
 
-    // Fetch the encrypted key
     const { data: keyData, error } = await supabaseAdmin
       .from('api_keys')
       .select('encrypted_key, salt, iv, is_active')
@@ -48,7 +45,6 @@ export async function GET(
       )
     }
 
-    // Decrypt the key
     const decryptedKey = await decrypt(keyData.encrypted_key, keyData.salt, keyData.iv)
 
     return NextResponse.json({
@@ -65,12 +61,10 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { service: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
-    const { service } = params
+    const { searchParams } = new URL(request.url)
+    const service = searchParams.get('service')
 
     if (!service) {
       return NextResponse.json(
