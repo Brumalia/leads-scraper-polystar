@@ -10,7 +10,7 @@
 
 **Overall Status:** 🟢 In Progress
 
-**Phase:** POC Phase - Week 1
+**Phase:** Phase 2 Complete — Data Scraping Integration
 
 ---
 
@@ -164,6 +164,53 @@
 - ⚠️ Production branch not set in Vercel (manual configuration required)
 
 ## Recent Work (2026-04-02)
+
+### Phase 2: Data Scraping Integration
+- ✅ Created `lib/companies-house.ts` — Companies House API integration
+  - Search companies by keyword with rate limiting
+  - Get detailed company profiles
+  - Auto-classify by SIC code
+  - Estimate company size from creation date
+- ✅ Created `lib/google-places.ts` — Google Places API integration
+  - Search places by keyword and location
+  - Get detailed place information
+  - Extract contact information
+  - Geographic filtering (north of Leicester)
+  - Quota management ($200 credit/month)
+- ✅ Created `lib/scraper.ts` — Playwright web scraping
+  - Scrape 192.com and Yell.com
+  - Robots.txt compliance
+  - Rate limiting (1 request/second)
+  - Retry logic with exponential backoff
+- ✅ Created `lib/deduplication.ts` — Data processing
+  - Merge data from multiple sources
+  - Remove duplicates
+  - Resolve conflicts (prefer more recent)
+  - Industry classification from keywords
+  - Contract packer detection
+  - Growing company detection
+  - Data validation and normalization
+  - Confidence scoring
+- ✅ Completed `app/api/scrape/run/route.ts` — Scrape orchestration
+  - 8-step workflow: API calls → Merge → Filter → Normalize → Validate → Store
+  - Progress tracking in scrapes table
+  - Error handling with rollback
+  - Detailed logging
+- ✅ Installed Playwright and dependencies
+- ✅ Lint and TypeScript validation passed
+
+### Commits
+- 091421a: feat: Implement Phase 2 - Data Scraping Integration
+
+### Environment Variables Needed
+- `COMPANIES_HOUSE_API_KEY` — Companies House API key
+- `GOOGLE_PLACES_API_KEY` — Google Places API key
+
+### Next Phase
+Phase 3: Automation & Weekly Digest
+- Weekly cron job configuration
+- Email digest generation
+- CSV attachment generation
 
 ### Project Documentation Updates
 - ✅ Created PROJECT-TEMPLATE.md for all new projects

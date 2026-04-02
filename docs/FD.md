@@ -354,46 +354,44 @@ Example Brewery,York,info@example.com,01904 123456,https://example.com,food & dr
 
 ### Phase 2: Data Scraping Integration
 
-**Goal:** Integrate Companies House API, Google Places API, and Playwright scraping
+**Status:** ✅ COMPLETE (2026-04-02)
 
-**Tasks:**
-1. Set up Companies House API integration
-   - API key configuration
-   - Company search endpoint
-   - Rate limiting (600 requests per minute)
-   - Data transformation to schema
+**Completed:**
+- ✅ Companies House API integration (`lib/companies-house.ts`)
+  - Search companies by keyword
+  - Get company profiles
+  - Rate limiting (600 req/min)
+  - SIC code classification
+  - Company size estimation
+- ✅ Google Places API integration (`lib/google-places.ts`)
+  - Search places by keyword
+  - Get place details
+  - Contact info extraction
+  - Geographic filtering
+  - Quota management
+- ✅ Playwright web scraping (`lib/scraper.ts`)
+  - 192.com and Yell.com scraping
+  - Robots.txt compliance
+  - Rate limiting (1 req/sec)
+  - Retry with exponential backoff
+- ✅ Data deduplication (`lib/deduplication.ts`)
+  - Merge from multiple sources
+  - Remove duplicates
+  - Resolve conflicts
+  - Industry classification
+  - Contract packer detection
+  - Data validation
+  - Confidence scoring
+- ✅ Scrape orchestration (`app/api/scrape/run/route.ts`)
+  - 8-step workflow
+  - Progress tracking
+  - Error handling
 
-2. Set up Google Places API integration
-   - API key configuration
-   - Places search endpoint
-   - Business details endpoint
-   - Contact information extraction
-   - Rate limiting
-
-3. Implement Playwright scraping
-   - Target sources: 192.com, Yell.com, industry association sites
-   - Robots.txt compliance
-   - Rate limiting and backoff
-   - Error handling and retry logic
-
-4. Data deduplication
-   - Merge data from multiple sources
-   - Remove duplicates
-   - Resolve conflicts (prefer more recent data)
-
-5. Industry classification
-   - Auto-classify by SIC code
-   - Manual override option
-   - Confidence scores
-
-6. Geographic filtering
-   - Validate location is north of Leicester
-   - County mapping (North England counties)
-
-**Deliverables:**
-- Scraping service module
-- Integration tests
-- Data validation rules
+**Remaining:**
+- ⬜ Obtain COMPANIES_HOUSE_API_KEY
+- ⬜ Obtain GOOGLE_PLACES_API_KEY
+- ⬜ Integration testing with real data
+- ⬜ Cron job configuration
 
 ---
 
