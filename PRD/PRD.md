@@ -1,23 +1,24 @@
-# PRD v0.4 — UK Food & Drink Leads Scraper for Polystar
+# PRD v0.5 — UK Leads Scraper for Polystar
 
 **Client:** Polystar
 **Contact:** Jacqui Horne (Business Development Manager)
 **Brokered by:** Corsus (corsus@agentmail.to)
-**Last Updated:** 2026-04-01
-**Status:** Requirements Approved (with open questions)
+**Last Updated:** 2026-04-02
+**Status:** Requirements Approved — Awaiting Functional Design
 
 ---
 
 ## 1. Executive Summary
 
-A web dashboard that scrapes UK food & drink producers in North England and delivers weekly leads to Polystar.
+A web dashboard that scrapes UK manufacturers across multiple industries (food & drink, pharma, chemicals) in North England and delivers leads to Polystar.
 
 **Primary Use Case:**
-- Polystar needs weekly leads of independent food and drink producers in North England
-- Target customers: Companies that produce/pack products in tins, bottles, or jars
+- Polystar needs leads of manufacturers in North England who produce/pack products in tins, bottles, or jars
 - Product being sold: LDPE collation shrink film (polythene packaging) for multi-pack shrink wrapping
+- Industries: Food & drink production, pharmaceutical manufacturing, chemical production (filterable in-app)
 - Manual research is time-consuming and inefficient
 - Automated scraping reduces research time and improves lead quality
+- Weekly digest + on-demand lead generation from dashboard
 
 **Contact:** Jacqui Horne (Business Development Manager at Polystar Plastics)
 **Brokered by:** Corsus (corsus@agentmail.to)
@@ -27,12 +28,14 @@ A web dashboard that scrapes UK food & drink producers in North England and deli
 ## 2. Target Audience
 
 **Primary:** Polystar sales team (Jacqui Horne)
-- Needs weekly leads of independent food and drink producers in North England
+- Needs weekly leads of manufacturers in North England
 - Geographic boundary: Leicester as southern limit (North England only)
 - Target companies: Those that produce/pack products in tins, bottles, or jars
+- Industries: Food & drink, pharma, chemicals (filterable in-app)
 - Wants accurate, up-to-date company information
 - Requires web-based dashboard for easy access
 - Weekly digest sent to Jacqui for review
+- On-demand export from dashboard with custom filters
 
 **Secondary:** Brumalia Studio (development team)
 - Maintains and improves the scraper
@@ -77,8 +80,9 @@ A web dashboard that scrapes UK food & drink producers in North England and deli
 ### 3.3 Dashboard Features
 - Web-based dashboard for lead viewing
 - Filter by location/region
+- Filter by industry (food & drink, pharma, chemicals, or all)
 - Search by company name
-- Export to CSV or JSON
+- Export to CSV on-demand with custom filters applied
 - Weekly leads count
 - Weekly digest sent to Jacqui for review
 - Archive weekly snapshots for trend tracking
@@ -105,7 +109,8 @@ A web dashboard that scrapes UK food & drink producers in North England and deli
 - Respect robots.txt and rate limits
 - Focus on independent producers (not large conglomerates)
 - Geographic filter: North England only (exclude Midlands and south, Leicester as southern limit)
-- Industry filter: Food & drink production only (exclude retail/distribution unless they manufacture)
+- Industry filter: User-selectable (food & drink, pharma, chemicals, or all)
+- Exclude retail/distribution unless they manufacture
 
 ### 4.4 Scalability
 - Support up to 1000 leads per week
@@ -333,22 +338,22 @@ CREATE INDEX idx_scrapes_run_date ON scrapes(run_date);
 
 ---
 
-## 15. Open Questions
+## 15. Decisions Made (2026-04-02)
 
-### Questions for Jacqui (Business Decisions)
+### Decision 1: Industry Scope
+**Question:** Only food & drink, or also pharma/chemicals?
+**Answer:** Filterable in-app — user can select by industry (food & drink, pharma, chemicals, or all)
+**Implementation:** Add industry filter to dashboard, include all relevant industries in scraping
 
-Corsus will clarify these with Jacqui:
+### Decision 2: Email Drip Campaigns
+**Question:** Automated or just leads delivered?
+**Answer:** Both — weekly digest + on-demand export from dashboard with custom filters
+**Implementation:** Weekly cron job sends digest; dashboard allows instant export with current search options
 
-1. **Industry Scope:** Does she want ONLY food & drink producers, or are other industries (pharma, chemicals) also relevant?
-   - Current assumption: Food & drink production only
-   - Alternative: Include pharma/chemicals that also use polythene packaging
-
-2. **Email Drip Campaigns:** Does she want email drip campaigns automated, or just leads delivered?
-   - Current assumption: Just leads delivered via dashboard + weekly digest
-   - Alternative: Automated email outreach to new leads
-
-3. **Conversion Rate Expectation:** What's her ideal conversion rate expectation from the scraper?
-   - Need to understand business goals for lead quality vs quantity trade-offs
+### Decision 3: Conversion Rate Expectation
+**Question:** What's the target conversion rate?
+**Answer:** Parked for now — not needed for POC
+**Implementation:** Focus on lead quality and data accuracy first; conversion metrics added in v1.0
 
 ---
 
@@ -374,14 +379,17 @@ Corsus will clarify these with Jacqui:
 ## 17. Next Steps
 
 1. ✅ Project structure created (2026-04-01)
-2. ⬜ Set up Supabase database and RLS policies
-3. ⬜ Implement Companies House API integration
-4. ⬜ Build basic Next.js dashboard
-5. ⬜ Implement Google Places integration
-6. ⬜ Add web scraping with Playwright
-7. ⬜ Implement daily scraping automation
-8. ⬜ QA and testing
-9. ⬜ Deploy to production
+2. ✅ Supabase database and RLS policies (2026-04-01)
+3. ✅ Next.js dashboard with search/filters/pagination (2026-04-01)
+4. ⬜ Implement industry filter (pharma/chemicals support)
+5. ⬜ Implement Companies House API integration
+6. ⬜ Implement Google Places integration
+7. ⬜ Add web scraping with Playwright
+8. ⬜ Implement weekly digest cron job
+9. ⬜ QA and testing with agent-browser
+10. ⬜ Deploy to production
+
+**Process Note:** Dashboard was built outside of proper gates (2026-04-01). Must follow full process for remaining work: plan approval → build → QA → documentation → ship approval.
 
 ---
 
@@ -391,6 +399,11 @@ Corsus will clarify these with Jacqui:
 - Database schema: companies + scrapes tables ✅
 - RLS: Read-only for authenticated users ✅
 - Pricing: SaaS tiers (£49-499/mo) for v1.0 ✅
+
+**CTO Decisions (2026-04-02):**
+- Industry filter: User-selectable in-app (food & drink, pharma, chemicals, or all) ✅
+- Lead delivery: Both weekly digest + on-demand export from dashboard ✅
+- Conversion metrics: Parked for now — not needed for POC ✅
 
 ---
 
